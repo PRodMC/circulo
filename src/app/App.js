@@ -9,6 +9,10 @@
   var $profile = d.getElementById('profileBtn');
   var $net = d.getElementById('netBanner');
 
+  var $player = d.getElementById('player');
+  var $playerUi = d.getElementById('playerUi');
+  var $playerMsg = d.getElementById('playerMsg');
+
   var stack = [{ name: 'home' }];
   var modalReturnFid = null;
 
@@ -83,6 +87,73 @@
     FM.ensure(modalReturnFid || null);
   }
 
+  /* ---------------- Reproductor ---------------- */
+
+  var idleTimer = null;
+  var playerReturnFid = null;
+
+  function wakeUi() {
+    $playerUi.className = 'player-ui';
+    if (idleTimer) w.clearTimeout(idleTimer);
+    idleTimer = w.setTimeout(function () {
+      var s = TP.player.state();
+      if (s && !s.paused && $playerMsg.hidden) $playerUi.className = 'player-ui is-idle';
+    }, 4000);
+  }
+
+  function updatePlayerUi() {
+    var s = TP.player.state();
+    if (!s) return;
+    d.getElementById('playerState').innerHTML = s.paused ? '❚❚' : '▶';
+    d.getElementById('playerTime').innerHTML = UI.formatTime(s.time) + ' / ' + UI.formatTime(s.duration);
+    d.getElementById('playerFill').style.width = (s.duration ? (s.time / s.duration) * 100 : 0) + '%';
+  }
+
+  function openPlayer(cid) {
+    var c = Data.byId(cid);
+    if (!c || !c.src) return;
+    playerReturnFid = FM.fid();
+    if (!$modal.hidden) closeModal();
+    d.getElementById('playerTitle').innerHTML = UI.esc(c.title);
+    d.getElementById('playerWatchers').innerHTML = UI.playerWatchers(cid);
+    $playerMsg.hidden = true;
+    $player.hidden = false;
+    Simulator.stop(); // sin avisos encima del video
+    TP.player.open(d.getElementById('playerStage'), c.src);
+    updatePlayerUi();
+    wakeUi();
+    Store.watch(cid, Store.user());
+  }
+
+  function closePlayer() {
+    TP.player.close();
+    $player.hidden = true;
+    if (idleTimer) w.clearTimeout(idleTimer);
+    Simulator.start();
+    FM.ensure(playerReturnFid);
+  }
+
+  TP.player.on('timeupdate', updatePlayerUi);
+  TP.player.on('play', function () { updatePlayerUi(); wakeUi(); });
+  TP.player.on('pause', function () { updatePlayerUi(); wakeUi(); });
+  TP.player.on('error', function () {
+    $playerMsg.innerHTML = 'No se pudo reproducir este video en este equipo.<br><span class="muted">Presiona BACK para regresar.</span>';
+    $playerMsg.hidden = false;
+    wakeUi();
+  });
+  TP.player.on('ended', function () { closePlayer(); });
+
+  function playerKey(k, e) {
+    e.preventDefault();
+    wakeUi();
+    switch (k) {
+      case 'OK': case 'PLAY': TP.player.toggle(); break;
+      case 'LEFT': TP.player.seekBy(-10); break;
+      case 'RIGHT': TP.player.seekBy(10); break;
+      case 'BACK': case 'EXIT': case 'CANCEL': closePlayer(); break;
+    }
+  }
+
   /* ---------------- Toasts ---------------- */
 
   function toast(html) {
@@ -113,7 +184,7 @@
         Store.recommend(cid, me, to); closeModal();
         toast(UI.avatar(to, 'sm') + '<span>Le recomendaste «' + UI.esc(Data.byId(cid).title) + '» a ' + UI.esc(Data.member(to).name) + '</span>');
         break;
-      case 'play': openModal(UI.modalPlay(cid)); break;
+      case 'play': openPlayer(cid); break;
       case 'profile-open': openModal(UI.modalProfile()); break;
       case 'set-user': closeModal(); Store.setUser(el.getAttribute('data-uid')); toast('Ahora ves Círculo como ' + UI.esc(Data.member(Store.user()).name)); break;
       case 'simulate': closeModal(); Simulator.tickNow(); break;
@@ -139,6 +210,7 @@
     if (TP.lifecycle.handle(e)) return;
     var k = TP.keys.normalize(e);
     if (!k) return;
+    if (!$player.hidden) { playerKey(k, e); return; }
     switch (k) {
       case 'LEFT': e.preventDefault(); FM.move('left'); break;
       case 'RIGHT': e.preventDefault(); FM.move('right'); break;
@@ -152,7 +224,7 @@
       case 'MENU': TP.lifecycle.onMenu(e); break;
       case 'PLAY':
         var c = FM.current && FM.current.getAttribute('data-cid');
-        if (c && $modal.hidden) { e.preventDefault(); openModal(UI.modalPlay(c)); }
+        if (c && $modal.hidden) { e.preventDefault(); openPlayer(c); }
         break;
     }
   });
@@ -161,6 +233,7 @@
      Solo fuera del STB, para no pelear con el D-pad. */
   if (!TP.device.hasRuntime()) {
     d.addEventListener('click', function (e) {
+      if (!$player.hidden) { wakeUi(); TP.player.toggle(); return; }
       var el = closest(e.target, '[data-focusable]');
       if (!el) {
         if (e.target === $modal) closeModal();
@@ -182,8 +255,12 @@
 
   /* ---------------- Lifecycle y red ---------------- */
 
-  TP.lifecycle.on('standby', function () { Simulator.stop(); TP.network.pause(); });
-  TP.lifecycle.on('wakeup', function () { TP.network.resume(); Simulator.start(); render(FM.scope ? null : FM.fid()); });
+  TP.lifecycle.on('standby', function () { TP.player.pause(); Simulator.stop(); TP.network.pause(); });
+  TP.lifecycle.on('wakeup', function () {
+    TP.network.resume();
+    if ($player.hidden) { Simulator.start(); render(FM.scope ? null : FM.fid()); }
+    else wakeUi(); // el video queda en pausa; el usuario decide si sigue
+  });
 
   TP.network.onChange(function (online) { $net.hidden = online; });
 

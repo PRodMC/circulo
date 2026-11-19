@@ -26,6 +26,25 @@
       <div class="modal-box" id="modalBox" role="dialog" aria-modal="true"></div>
     </div>
 
+    <div id="player" class="player" hidden>
+      <div id="playerStage" class="player-stage"></div>
+      <div id="playerUi" class="player-ui">
+        <div class="player-top">
+          <div class="player-title" id="playerTitle"></div>
+          <div class="player-watchers" id="playerWatchers"></div>
+        </div>
+        <div class="player-msg" id="playerMsg" hidden></div>
+        <div class="player-bottom">
+          <div class="player-bar"><div class="player-fill" id="playerFill"></div></div>
+          <div class="player-row">
+            <span id="playerState" class="player-state">▶</span>
+            <span id="playerTime">0:00 / 0:00</span>
+            <span class="player-hints">OK pausa · ◀ ▶ 10 s · BACK salir</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="toasts" class="toasts" aria-live="polite"></div>
   </div>
 
@@ -41,6 +60,7 @@
 
   <!-- Negocio (neutral a la plataforma) -->
   <script src="src/services/data.js"></script>
+  <script src="src/services/tmdb.js"></script>
   <script src="src/services/store.js"></script>
   <script src="src/services/simulator.js"></script>
 

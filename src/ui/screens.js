@@ -29,8 +29,10 @@
     return s + '</span>';
   }
 
+  /* R2: w342 está cerca del tamaño real de despliegue (≈240–350 px a 1080p). */
   function poster(c, badge) {
-    return '<div class="poster" style="background:' + c.colors[0] + ';background:linear-gradient(160deg,' + c.colors[0] + ',' + c.colors[1] + ')">' +
+    var img = c.poster ? '<img class="poster-img" src="' + Data.TMDB_IMG + 'w342' + c.poster + '" alt="" loading="lazy" onerror="this.parentNode.className=\'poster\';this.parentNode.removeChild(this)">' : '';
+    return '<div class="poster' + (img ? ' has-img' : '') + '" style="background:' + c.colors[0] + ';background:linear-gradient(160deg,' + c.colors[0] + ',' + c.colors[1] + ')">' + img +
       '<div class="poster-in">' + (badge ? '<span class="badge">' + esc(badge) + '</span>' : '') +
       '<div class="poster-name">' + esc(c.title) + '</div><div class="poster-genre">' + esc(c.genre) + '</div></div></div>';
   }
@@ -72,6 +74,7 @@
       case 'react':
         var r = Data.reaction(a.r);
         return who + ' reaccionó ' + (r ? '«' + r.sym + ' ' + esc(r.label) + '»' : '') + ' a ' + t;
+      case 'watch': return who + ' empezó a ver ' + t;
       case 'rec':
         return who + (a.to === me ? ' te recomendó ' : ' le recomendó ') + t + (a.to === me ? '' : ' a ' + esc(Data.member(a.to).name));
     }
@@ -87,13 +90,16 @@
     var topVotes = Store.voters(top.id);
     var html = '';
 
-    html += '<section class="hero">' + '<div class="poster-col" style="width:18rem;flex:0 0 auto">' + poster(top) + '</div>' +
+    html += '<section class="hero">' +
+      (top.backdrop ? '<img class="hero-bg" src="' + Data.TMDB_IMG + 'w780' + top.backdrop + '" alt="">' : '') +
+      '<div class="poster-col" style="width:18rem;flex:0 0 auto">' + poster(top) + '</div>' +
       '<div class="hero-body"><div class="eyebrow">Lo más votado de tu Círculo</div>' +
       '<h1 class="display">' + esc(top.title) + '</h1>' +
       '<div class="meta">' + esc(top.genre) + ' · ' + esc(top.year) + ' · ' + esc(top.dur) + '</div>' +
       '<p class="desc">' + esc(top.desc) + '</p>' +
       '<div class="actions">' +
-      btn('Ver detalle', 'hero-open', { action: 'open', cid: top.id }, 'btn-cta') +
+      btn('▶ Reproducir', 'hero-play', { action: 'play', cid: top.id }, 'btn-cta') +
+      btn('Ver detalle', 'hero-open', { action: 'open', cid: top.id }) +
       btn((Store.hasVoted(top.id, me) ? '✓ Votaste' : '▲ Votar') + ' · ' + topVotes.length, 'hero-vote', { action: 'vote', cid: top.id }, Store.hasVoted(top.id, me) ? 'is-on' : '') +
       '</div></div></section>';
 
@@ -113,6 +119,8 @@
       for (var x = 0; x < items.length; x++) arr.push({ c: items[x] });
       html += rail('cat-' + cat.id, cat.title, arr);
     }
+    html += '<p class="credits">Videos de dominio público alojados en Internet Archive (archive.org). ' +
+      'Portadas y sinopsis de TMDB: este producto usa la API de TMDB pero no está avalado ni certificado por TMDB.</p>';
     return html;
   };
 
@@ -242,11 +250,20 @@
     return s + '</div>';
   };
 
-  UI.modalPlay = function (cid) {
-    var c = Data.byId(cid);
-    return '<h2 class="modal-title">' + esc(c.title) + '</h2>' +
-      '<div class="player-stub">Simulación: aquí iría la reproducción.<br><small>' + esc(TP.player.reason) + '</small></div>' +
-      '<div class="actions">' + btn('Cerrar', 'play-close', { action: 'close-modal' }, 'btn-cta') + '</div>';
+  /* Quién del Círculo opinó de este título (se muestra arriba del video). */
+  UI.playerWatchers = function (cid) {
+    var me = Store.user(), seen = {}, ids = [];
+    var v = Store.voters(cid), r = Store.reactionsFor(cid);
+    for (var i = 0; i < v.length; i++) if (v[i] !== me && !seen[v[i]]) { seen[v[i]] = 1; ids.push(v[i]); }
+    for (var j = 0; j < r.length; j++) if (r[j].uid !== me && !seen[r[j].uid]) { seen[r[j].uid] = 1; ids.push(r[j].uid); }
+    if (!ids.length) return '';
+    return avatars(ids) + '<span>' + (ids.length === 1 ? 'opinó' : 'opinaron') + ' sobre este título</span>';
+  };
+
+  UI.formatTime = function (s) {
+    s = Math.floor(s || 0);
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+    return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (x < 10 ? '0' : '') + x;
   };
 
   UI.profileButton = function () {

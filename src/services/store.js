@@ -120,6 +120,11 @@
       commit({ type: 'rec', uid: from, cid: cid, to: to });
     },
 
+    watch: function (cid, uid) {
+      log({ uid: uid, type: 'watch', cid: cid });
+      commit({ type: 'watch', uid: uid, cid: cid });
+    },
+
     recsFor: function (uid) {
       var out = [], seen = {};
       for (var i = 0; i < state.recs.length; i++) {

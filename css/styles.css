@@ -170,3 +170,28 @@ button:focus { outline: none; }
   .row { flex-wrap: wrap; }
   .topbar { flex-wrap: wrap; gap: var(--stb-space-3); }
 }
+
+/* ---------- Portadas TMDB ---------- */
+.poster-img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+.poster.has-img .poster-name, .poster.has-img .poster-genre { display: none; }
+.hero { position: relative; overflow: hidden; }
+.hero-bg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+.hero > .poster-col, .hero > .hero-body { position: relative; }
+.credits { color: var(--stb-text-variant); font-size: 1.25rem; line-height: 1.875rem; border-top: .125rem solid var(--stb-outline-divider); padding-top: var(--stb-space-4); }
+
+/* ---------- Reproductor ---------- */
+.player { position: fixed; left: 0; top: 0; right: 0; bottom: 0; background: #000; z-index: 30; }
+.player-stage, .player-video { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.player-video { object-fit: contain; background: #000; }
+.player-ui { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; flex-direction: column; justify-content: space-between; padding: var(--stb-margin-y) var(--stb-margin-x); transition: opacity .3s; }
+.player-ui.is-idle { opacity: 0; }
+.player-top { display: flex; align-items: center; justify-content: space-between; gap: var(--stb-space-4); background: linear-gradient(rgba(0,0,3,.75), rgba(0,0,3,0)); margin: calc(-1 * var(--stb-margin-y)) calc(-1 * var(--stb-margin-x)) 0; padding: var(--stb-margin-y) var(--stb-margin-x) var(--stb-space-6); }
+.player-title { font-size: 2.75rem; line-height: 3.5rem; font-weight: 700; }
+.player-watchers { display: flex; align-items: center; gap: var(--stb-space-2); color: var(--stb-text-variant); font-size: 1.25rem; }
+.player-msg { align-self: center; background: var(--stb-container); border: .125rem solid var(--stb-danger); color: var(--stb-text-default); border-radius: var(--stb-radius-md); padding: var(--stb-space-4) var(--stb-space-5); max-width: 50rem; text-align: center; }
+.player-bottom { background: linear-gradient(rgba(0,0,3,0), rgba(0,0,3,.85)); margin: 0 calc(-1 * var(--stb-margin-x)) calc(-1 * var(--stb-margin-y)); padding: var(--stb-space-6) var(--stb-margin-x) var(--stb-margin-y); }
+.player-bar { height: .5rem; background: var(--stb-opacity); border-radius: var(--stb-radius-full); overflow: hidden; }
+.player-fill { height: 100%; width: 0; background: var(--stb-brand); }
+.player-row { display: flex; align-items: center; gap: var(--stb-space-4); margin-top: var(--stb-space-3); }
+.player-state { width: 2rem; text-align: center; }
+.player-hints { margin-left: auto; color: var(--stb-text-variant); font-size: 1.25rem; }

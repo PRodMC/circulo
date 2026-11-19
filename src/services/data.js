@@ -1,6 +1,10 @@
-/* Datos simulados: miembros del Círculo y catálogo de contenido (ficticio). */
+/* Datos: miembros del Círculo y catálogo.
+   El catálogo son películas y cortos de DOMINIO PÚBLICO alojados en Internet Archive
+   (archive.org). Portadas y sinopsis vienen de TMDB vía src/services/tmdb.js,
+   generado por scripts/fetch-tmdb.mjs (la llave de la API nunca se publica). */
 (function (w) {
   var Data = w.Data = {};
+  var IA = 'https://archive.org/download/';
 
   Data.members = [
     { id: 'ana',   name: 'Ana',   color: '#0071EB' },
@@ -19,30 +23,79 @@
   ];
 
   Data.categories = [
-    { id: 'series',   title: 'Series' },
-    { id: 'peliculas', title: 'Películas' },
-    { id: 'docs',     title: 'Documentales' },
-    { id: 'kids',     title: 'Para toda la familia' }
+    { id: 'terror',  title: 'Terror clásico' },
+    { id: 'comedia', title: 'Comedia clásica' },
+    { id: 'scifi',   title: 'Ciencia ficción de culto' },
+    { id: 'anim',    title: 'Animación para toda la familia' }
   ];
 
-  // Pósters como degradados CSS: cero imágenes que decodificar (R2).
+  /* q + qYear: búsqueda en TMDB (título original). src: MP4 progresivo en archive.org. */
   Data.content = [
-    { id: 'c01', cat: 'series', title: 'Marea Alta', genre: 'Drama', year: 2026, dur: '2 temporadas', colors: ['#0B3D5C', '#1E7FA8'], desc: 'Una familia de pescadores en Ensenada enfrenta una temporada que cambiará el puerto para siempre.' },
-    { id: 'c02', cat: 'series', title: 'Código Norte', genre: 'Thriller', year: 2025, dur: '1 temporada', colors: ['#1A1A2E', '#4A2C6E'], desc: 'Una analista descubre un patrón en apagones de la red eléctrica de Monterrey.' },
-    { id: 'c03', cat: 'series', title: 'La Vecindad 2050', genre: 'Comedia', year: 2026, dur: '3 temporadas', colors: ['#7A3E00', '#E08A1E'], desc: 'Vecinos de un edificio inteligente que no siempre entiende lo que le piden.' },
-    { id: 'c04', cat: 'series', title: 'Sabor a Origen', genre: 'Gastronomía', year: 2024, dur: '1 temporada', colors: ['#5C1A1A', '#B5452B'], desc: 'Cocineras tradicionales comparten recetas de ocho regiones de México.' },
-    { id: 'c05', cat: 'series', title: 'Señal Perdida', genre: 'Ciencia ficción', year: 2026, dur: '1 temporada', colors: ['#0D2B2B', '#2E8B7A'], desc: 'Un radioaficionado recibe mensajes que parecen venir de su propio futuro.' },
-    { id: 'c06', cat: 'peliculas', title: 'El Último Tren a Zacatecas', genre: 'Aventura', year: 2025, dur: '1 h 52 min', colors: ['#3B2A14', '#9C6B2F'], desc: 'Dos hermanos cruzan el desierto para entregar una carta que nadie quiere recibir.' },
-    { id: 'c07', cat: 'peliculas', title: 'Noche de Lotería', genre: 'Comedia', year: 2026, dur: '1 h 38 min', colors: ['#4A0E2E', '#D43F7A'], desc: 'Una reunión familiar se sale de control cuando aparece un boleto ganador.' },
-    { id: 'c08', cat: 'peliculas', title: 'Frecuencia', genre: 'Suspenso', year: 2024, dur: '2 h 04 min', colors: ['#101820', '#3E5C76'], desc: 'Una locutora nocturna recibe la llamada de un oyente que sabe demasiado.' },
-    { id: 'c09', cat: 'peliculas', title: 'Volcán', genre: 'Acción', year: 2026, dur: '1 h 47 min', colors: ['#2B0A00', '#E2551B'], desc: 'Un equipo de rescate tiene seis horas antes de que el Popocatépetl despierte.' },
-    { id: 'c10', cat: 'docs', title: 'Arrecife Vivo', genre: 'Naturaleza', year: 2025, dur: '6 episodios', colors: ['#00303F', '#0FA3B1'], desc: 'El Sistema Arrecifal Mesoamericano contado por quienes lo protegen.' },
-    { id: 'c11', cat: 'docs', title: 'Hecho a Mano', genre: 'Cultura', year: 2024, dur: '8 episodios', colors: ['#3A2E1F', '#A68A64'], desc: 'Artesanos que mantienen vivos oficios de siglos.' },
-    { id: 'c12', cat: 'docs', title: 'Cancha Llena', genre: 'Deportes', year: 2026, dur: '5 episodios', colors: ['#0E3B1F', '#2F9E44'], desc: 'Una temporada dentro de un equipo de futbol femenil de segunda división.' },
-    { id: 'c13', cat: 'kids', title: 'Pixel y Pancho', genre: 'Animación', year: 2026, dur: '2 temporadas', colors: ['#1B3A8C', '#5DA9E9'], desc: 'Un robot y un ajolote resuelven misterios en Xochimilco.' },
-    { id: 'c14', cat: 'kids', title: 'La Banda del Jardín', genre: 'Musical', year: 2025, dur: '1 temporada', colors: ['#3D5A1E', '#A3C43B'], desc: 'Insectos músicos preparan el concierto más grande del jardín.' },
-    { id: 'c15', cat: 'kids', title: 'Estrella Fugaz', genre: 'Aventura', year: 2024, dur: '1 h 25 min', colors: ['#2A1B4D', '#7B5CC4'], desc: 'Una niña construye un cohete para devolver una estrella a su lugar.' }
+    { id: 'c01', cat: 'terror', title: 'La noche de los muertos vivientes', q: 'Night of the Living Dead', year: 1968, dur: '1 h 35 min', genre: 'Terror',
+      colors: ['#1A1A1A', '#5C5C5C'], src: IA + 'night_of_the_living_dead_dvd/Night.mp4',
+      desc: 'Un grupo de desconocidos se atrinchera en una granja mientras los muertos vuelven a la vida.' },
+    { id: 'c02', cat: 'terror', title: 'Nosferatu', q: 'Nosferatu', year: 1922, dur: '1 h 33 min', genre: 'Terror · Cine mudo',
+      colors: ['#1B1F14', '#55603A'], src: IA + 'Nosferatu_most_complete_version_93_mins./Nosferatu_1922_Symphony_of_Horror_512kb.mp4',
+      desc: 'El conde Orlok deja Transilvania y lleva la plaga a la ciudad de Wisborg.' },
+    { id: 'c03', cat: 'terror', title: 'El carnaval de las almas', q: 'Carnival of Souls', year: 1962, dur: '1 h 23 min', genre: 'Terror',
+      colors: ['#101820', '#3E5C76'], src: IA + 'CarnivalofSouls/CarnivalOfSouls.mp4',
+      desc: 'Tras sobrevivir a un accidente, una organista se siente atraída por un pabellón abandonado.' },
+    { id: 'c04', cat: 'terror', title: 'El gabinete del doctor Caligari', q: 'The Cabinet of Dr. Caligari', year: 1920, dur: '51 min', genre: 'Terror · Cine mudo',
+      colors: ['#3B2A14', '#9C6B2F'], src: IA + 'DasKabinettdesDoktorCaligariTheCabinetofDrCaligari/The_Cabinet_of_Dr._Caligari_512kb.mp4',
+      desc: 'Un hipnotizador de feria y su sonámbulo siembran el miedo en un pueblo alemán.' },
+    { id: 'c05', cat: 'terror', title: 'La tienda de los horrores', q: 'The Little Shop of Horrors', year: 1960, dur: '1 h 11 min', genre: 'Comedia de terror',
+      colors: ['#0E3B1F', '#2F9E44'], src: IA + 'TheLittleShopOfHorrors1960_765/TheLittleShopOfHorrors1960.mp4',
+      desc: 'Un empleado de florería cultiva una planta que se alimenta de sangre humana.' },
+
+    { id: 'c06', cat: 'comedia', title: 'Luna nueva', q: 'His Girl Friday', year: 1940, dur: '1 h 32 min', genre: 'Comedia',
+      colors: ['#4A0E2E', '#D43F7A'], src: IA + 'his_girl_friday/his_girl_friday.mp4',
+      desc: 'Un editor hará lo que sea para que su exesposa, la mejor reportera, no deje el periódico.' },
+    { id: 'c07', cat: 'comedia', title: 'El maquinista de La General', q: 'The General', year: 1926, dur: '1 h 07 min', genre: 'Comedia · Cine mudo',
+      colors: ['#2B0A00', '#E2551B'], src: IA + 'TheGeneral/The_General_512kb.mp4',
+      desc: 'Buster Keaton persigue la locomotora que le robaron durante la Guerra Civil.' },
+    { id: 'c08', cat: 'comedia', title: 'El moderno Sherlock Holmes', q: 'Sherlock Jr.', year: 1924, dur: '45 min', genre: 'Comedia · Cine mudo',
+      colors: ['#1A1A2E', '#4A2C6E'], src: IA + 'sherlockjr1924_201909/' + encodeURIComponent('Sherlock Jr. - Buster Keaton (1924) HD [720p].mp4'),
+      desc: 'Un proyeccionista que sueña con ser detective se mete, literalmente, en la película.' },
+    { id: 'c09', cat: 'comedia', title: 'El hombre mosca', q: 'Safety Last!', year: 1923, dur: '1 h 14 min', genre: 'Comedia · Cine mudo',
+      colors: ['#3A2E1F', '#A68A64'], src: IA + 'SafetyLastHaroldLloyd1923.FullMovieexcellentQuality./' + encodeURIComponent('Safety Last - Harold Lloyd 1923. Full movie,excellent quality..mp4'),
+      desc: 'Harold Lloyd escala un rascacielos para impresionar a su novia.' },
+
+    { id: 'c10', cat: 'scifi', title: 'Plan 9 del espacio exterior', q: 'Plan 9 from Outer Space', year: 1957, dur: '1 h 18 min', genre: 'Ciencia ficción',
+      colors: ['#0D2B2B', '#2E8B7A'], src: IA + 'plan-9-from-outer-space/plan-9-from-outer-space.mp4',
+      desc: 'Extraterrestres reviven a los muertos para detener a la humanidad. Un clásico de culto.' },
+    { id: 'c11', cat: 'scifi', title: 'Viaje a la Luna', q: 'A Trip to the Moon', year: 1902, dur: '13 min', genre: 'Ciencia ficción · Cine mudo',
+      colors: ['#2A1B4D', '#7B5CC4'], src: IA + 'ATripToTheMoonGeorgeMelies/' + encodeURIComponent('A Trip to the Moon-George Méliès.mp4'),
+      desc: 'Georges Méliès lleva a seis astrónomos a la Luna en una bala de cañón.' },
+
+    { id: 'c12', cat: 'anim', title: 'Los viajes de Gulliver', q: "Gulliver's Travels", year: 1939, dur: '1 h 13 min', genre: 'Animación',
+      colors: ['#1B3A8C', '#5DA9E9'], src: IA + 'gullivers_travels1939/gullivers_travels1939.mp4',
+      desc: 'Un náufrago despierta en Liliput, un reino diminuto al borde de la guerra.' },
+    { id: 'c13', cat: 'anim', title: 'Superman: Los monstruos mecánicos', q: 'The Mechanical Monsters', year: 1941, dur: '10 min', genre: 'Animación',
+      colors: ['#0B3D5C', '#1E7FA8'], src: IA + 'superman_the_mechanical_monsters/superman_the_mechanical_monsters_512kb.mp4',
+      desc: 'Robots gigantes asaltan bancos de Metrópolis y Lois Lane se infiltra para descubrir a su creador.' },
+    { id: 'c14', cat: 'anim', title: 'Superman: Terremoto eléctrico', q: 'Electric Earthquake', year: 1942, dur: '9 min', genre: 'Animación',
+      colors: ['#5C1A1A', '#B5452B'], src: IA + 'superman_electric_earthquake/superman_electric_earthquake_512kb.mp4',
+      desc: 'Un científico amenaza con hundir Manhattan si no le devuelven la isla.' },
+    { id: 'c15', cat: 'anim', title: 'Superman: La hora undécima', q: 'Eleventh Hour', year: 1942, dur: '8 min', genre: 'Animación',
+      colors: ['#3D5A1E', '#A3C43B'], src: IA + 'superman_eleventh_hour/superman_eleventh_hour_512kb.mp4',
+      desc: 'Superman sabotea barcos enemigos cada noche, hasta que Lois es capturada.' }
   ];
+
+  /* Mezcla los datos de TMDB (si el archivo generado existe) sobre el catálogo. */
+  Data.applyTmdb = function (map) {
+    if (!map) return;
+    for (var i = 0; i < Data.content.length; i++) {
+      var c = Data.content[i], t = map[c.id];
+      if (!t) continue;
+      c.tmdbId = t.id;
+      if (t.poster) c.poster = t.poster;
+      if (t.backdrop) c.backdrop = t.backdrop;
+      if (t.title) c.title = t.title;
+      if (t.overview) c.desc = t.overview;
+    }
+  };
+
+  Data.TMDB_IMG = 'https://image.tmdb.org/t/p/';
 
   Data.byId = function (id) {
     for (var i = 0; i < Data.content.length; i++) if (Data.content[i].id === id) return Data.content[i];
