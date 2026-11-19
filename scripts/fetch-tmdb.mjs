@@ -51,7 +51,8 @@ for (const item of content) {
     if (!m) { console.warn(`✗ ${item.id} sin resultados: ${item.q}`); continue; }
     out[item.id] = {
       id: m.id,
-      title: m.title || null,
+      // Solo si TMDB tiene traducción; si no, se queda el título en español del catálogo.
+      title: m.title && m.title !== m.original_title ? m.title.replace(/\s*\(\d{4}\)\s*$/, '') : null,
       overview: m.overview || null,
       poster: m.poster_path || null,
       backdrop: m.backdrop_path || null
