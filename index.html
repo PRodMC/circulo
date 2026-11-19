@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Círculo</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-dot"></span>Círculo</div>
+      <nav class="tabs" id="tabs" aria-label="Secciones">
+        <button class="tab" data-focusable data-fid="tab-home" data-action="tab" data-screen="home">Inicio</button>
+        <button class="tab" data-focusable data-fid="tab-list" data-action="tab" data-screen="list">Lista del Círculo</button>
+        <button class="tab" data-focusable data-fid="tab-activity" data-action="tab" data-screen="activity">Actividad</button>
+      </nav>
+      <button class="profile" id="profileBtn" data-focusable data-fid="profile" data-action="profile-open"></button>
+    </header>
+
+    <div id="netBanner" class="net-banner" hidden>Sin conexión. La app sigue funcionando en modo local.</div>
+
+    <main id="screen" class="screen scroll-y"></main>
+
+    <div id="modal" class="modal" hidden>
+      <div class="modal-box" id="modalBox" role="dialog" aria-modal="true"></div>
+    </div>
+
+    <div id="toasts" class="toasts" aria-live="polite"></div>
+  </div>
+
+  <!-- Capa de plataforma Totalplay (único lugar que toca sagem.*) -->
+  <script src="src/platform/totalplay/device.js"></script>
+  <script src="src/platform/totalplay/debug.js"></script>
+  <script src="src/platform/totalplay/keys.js"></script>
+  <script src="src/platform/totalplay/focus.js"></script>
+  <script src="src/platform/totalplay/lifecycle.js"></script>
+  <script src="src/platform/totalplay/network.js"></script>
+  <script src="src/platform/totalplay/player.js"></script>
+  <script src="src/platform/totalplay/drm.js"></script>
+
+  <!-- Negocio (neutral a la plataforma) -->
+  <script src="src/services/data.js"></script>
+  <script src="src/services/store.js"></script>
+  <script src="src/services/simulator.js"></script>
+
+  <!-- UI -->
+  <script src="src/ui/screens.js"></script>
+  <script src="src/app/App.js"></script>
+</body>
+</html>
