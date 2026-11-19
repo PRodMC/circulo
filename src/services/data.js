@@ -81,6 +81,25 @@
       desc: 'Superman sabotea barcos enemigos cada noche, hasta que Lois es capturada.' }
   ];
 
+  /* Etiquetas para el recomendador de «Elegir»: ánimo y quién sale. */
+  Data.tags = {
+    c01: { mood: ['miedo'], people: [] },
+    c02: { mood: ['miedo', 'mudo'], people: [] },
+    c03: { mood: ['miedo'], people: [] },
+    c04: { mood: ['miedo', 'mudo'], people: [] },
+    c05: { mood: ['reir', 'miedo'], people: ['nicholson'] },
+    c06: { mood: ['reir'], people: ['grant'] },
+    c07: { mood: ['reir', 'mudo'], people: ['keaton'] },
+    c08: { mood: ['reir', 'mudo'], people: ['keaton'] },
+    c09: { mood: ['reir', 'mudo'], people: ['lloyd'] },
+    c10: { mood: ['reir', 'miedo'], people: ['lugosi'] },
+    c11: { mood: ['corto', 'mudo'], people: [] },
+    c12: { mood: ['reir'], people: [] },
+    c13: { mood: ['corto'], people: ['superman'] },
+    c14: { mood: ['corto'], people: ['superman'] },
+    c15: { mood: ['corto'], people: ['superman'] }
+  };
+
   /* Mezcla los datos de TMDB (si el archivo generado existe) sobre el catálogo. */
   Data.applyTmdb = function (map) {
     if (!map) return;

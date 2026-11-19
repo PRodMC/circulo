@@ -135,6 +135,8 @@
       if (!el) return;
       // Prompt 2: para <a href> navegar con location, no con .click() sintético.
       if (el.tagName === 'A' && el.getAttribute('href')) {
+        // Enlaces externos (p. ej. WhatsApp) en otra pestaña fuera del STB.
+        if (el.getAttribute('target') === '_blank' && !TP.device.hasRuntime()) { w.open(el.getAttribute('href'), '_blank'); return; }
         w.location.href = el.getAttribute('href');
         return;
       }

@@ -14,6 +14,34 @@ Un "Círculo" es un grupo de personas (familia, amigos) que deciden juntas qué 
 
 No hay backend: el estado vive en `localStorage` del navegador (con respaldo en memoria si no existe).
 
+## Las tres etapas de Círculo
+
+### Antes — «Elegir»
+Botón principal del inicio. En la misma pantalla y sin teclado:
+1. **¿Quiénes van a ver?** Miembros del Círculo + invitados.
+2. **Ronda rápida por turnos** (10 s por pregunta, si se acaba el tiempo cuenta como «Me da igual»): género, ánimo y actor/personaje.
+3. **3 sugerencias** con % de coincidencia y el porqué (`src/services/recommender.js`).
+4. **Hasta 5 personas** eligen directo; **con más de 5** la votación es obligatoria (por turnos; empate → gana la de mayor coincidencia).
+
+### Durante — salas en vivo
+- Al reproducir se abre una **sala** con código de 4 dígitos en Firebase Realtime Database (`src/services/realtime.js`, vía REST + streaming; si no hay streaming hace polling cada 3 s).
+- **▼** abre la bandeja: reacciones, comentarios rápidos e **Invitar** (QR + código).
+- **Otra TV**: «Viendo como» → «Unirse a una sala» → teclado numérico en pantalla (o las teclas numéricas del control).
+- **Celular**: escanea el QR (`?sala=1234`), elige quién es y manda reacciones o **comentarios escritos** (en el STB la entrada de texto sigue TBD, por eso ahí solo hay comentarios predefinidos).
+- Las reacciones flotan sobre el video y los comentarios aparecen a la izquierda con el nombre de quien los mandó. Los demás miembros simulados también reaccionan de vez en cuando.
+
+### Después — compartir
+Al terminar o salir del video: portada, quiénes lo vieron (los de «Elegir» + las pantallas conectadas a la sala), un mensaje a elegir y **Compartir por WhatsApp**. En la TV se muestra un QR que abre WhatsApp en el celular con el mensaje listo; en celular o compu hay botón directo.
+La portada llega como **vista previa del enlace**: cada título tiene una página pública `v/<id>.html` con etiquetas Open Graph (portada de TMDB + descripción), generadas con:
+
+```bash
+node scripts/build-share-pages.mjs
+```
+
+### Firebase
+- Proyecto `circulo-ce754`, configuración en `src/config/environment.js` (no es secreta).
+- Reglas: solo `/salas/*` se puede leer/escribir; todo lo demás está bloqueado. Para demo; antes de producción hay que cerrarlas más y limpiar salas viejas.
+
 ## Catálogo y video
 
 - **Videos**: 15 películas y cortos de **dominio público** (Nosferatu, La noche de los muertos vivientes, El maquinista de La General, Superman de Fleischer, etc.), servidos como MP4 desde Internet Archive. Se reproducen con `<video>` HTML5.
@@ -76,5 +104,6 @@ src/app/App.js                 Router, acciones, teclas, capa mouse/touch
 
 - Player y DRM (guía §19, §20): reproducción HTML5 simulada, sin validar en STB; DRM no implementado.
 - Entrada de texto (§21): se evita; reacciones predefinidas en lugar de comentarios libres.
-- Colaboración real entre dispositivos: hoy es simulada por navegador; requiere backend.
+- Colaboración: las salas de «Durante» ya son en vivo entre dispositivos (Firebase); la lista, votos y actividad del Círculo siguen siendo locales por navegador.
+- Streaming/EventSource en el STB (§5.2): sin validar; hay polling de respaldo.
 - Archivos `.woff2` de Montserrat en `/fonts` (R1): hoy se usa la Montserrat instalada en el equipo y, si no existe, Arial.

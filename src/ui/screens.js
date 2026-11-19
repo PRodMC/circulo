@@ -37,6 +37,8 @@
       '<div class="poster-name">' + esc(c.title) + '</div><div class="poster-genre">' + esc(c.genre) + '</div></div></div>';
   }
 
+  UI.poster = poster;
+
   function card(c, fid, badge) {
     var votes = Store.voters(c.id).length;
     return '<button class="card" data-focusable data-fid="' + esc(fid) + '" data-action="open" data-cid="' + c.id + '">' +
@@ -88,7 +90,9 @@
     var ranked = Store.rankedList();
     var top = ranked.length ? Data.byId(ranked[0].cid) : Data.content[0];
     var topVotes = Store.voters(top.id);
-    var html = '';
+    var html = '<button class="elegir-cta" data-focusable data-fid="home-elegir" data-action="elegir-open">' +
+      '<span class="elegir-cta-icon">?</span><span><strong>Elegir</strong><small>¿No saben qué ver? Respondan unas preguntas rápidas y les damos 3 opciones.</small></span>' +
+      '<span class="elegir-cta-go">Empezar ›</span></button>';
 
     html += '<section class="hero">' +
       (top.backdrop ? '<img class="hero-bg" src="' + Data.TMDB_IMG + 'w780' + top.backdrop + '" alt="">' : '') +
@@ -223,6 +227,7 @@
       s += option('p-' + m.id, UI.avatar(m.id), esc(m.name), { action: 'set-user', uid: m.id }, m.id === me ? '<span class="muted" style="margin-left:auto">✓ Actual</span>' : '');
     }
     s += '</div><div class="options">' +
+      option('p-join', '<span class="sym">#</span>', 'Unirse a una sala', { action: 'du-join-open' }) +
       option('p-sim', '<span class="sym">↻</span>', 'Simular actividad de otro miembro', { action: 'simulate' }) +
       option('p-reset', '<span class="sym">⟲</span>', 'Restablecer demo', { action: 'reset' }) +
       '</div>';
@@ -270,4 +275,9 @@
     var m = Data.member(Store.user());
     return UI.avatar(m.id) + '<span><small>Viendo como</small>' + esc(m.name) + '</span>';
   };
+  var Screens = w.Screens = w.Screens || {};
+  Screens.home = UI.home;
+  Screens.detail = function (r) { return UI.detail(r.cid); };
+  Screens.list = UI.list;
+  Screens.activity = UI.activity;
 })(window);
